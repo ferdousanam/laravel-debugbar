@@ -83,7 +83,12 @@
                     $('<span title="Row count" />').addClass(csscls('row-count')).text(stmt.row_count).appendTo(li);
                 }
                 if (typeof(stmt.stmt_id) != 'undefined' && stmt.stmt_id) {
-                    $('<span title="Prepared statement ID" />').addClass(csscls('stmt-id')).text(stmt.stmt_id).appendTo(li);
+                    $('<span title="Prepared statement ID" />').addClass(csscls('stmt-id')).text(stmt.stmt_id).on('click', function (event) {
+                        if (stmt.backtrace && stmt.backtrace.length) {
+                            event.stopPropagation();
+                            location.href = stmt.backtrace[0].editorLink;
+                        }
+                    }).appendTo(li);
                 }
                 if (stmt.connection) {
                     $('<span title="Connection" />').addClass(csscls('database')).text(stmt.connection).appendTo(li);
@@ -173,6 +178,7 @@
                         var $name = $('<td />').addClass(csscls('name')).html('Backtrace ' + $icon);
                         var $value = $('<td />').addClass(csscls('value'));
                         var $span = $('<span />').addClass('phpdebugbar-text-muted');
+                        var $link = $('<a />').addClass('phpdebugbar-text-muted');
 
                         var $backtrace = new PhpDebugBar.Widgets.ListWidget({ itemRenderer: function (li, source) {
                             var $parts = [
@@ -185,7 +191,9 @@
                             }
 
                             $parts.push(source.name);
-                            $parts.push($span.clone().text(':' + source.line));
+                            $parts.push($link.clone().text(':' + source.line).attr('href', source.editorLink).on('click', function (event) {
+                                event.stopPropagation();
+                            }));
 
                             li.append($parts).removeClass(csscls('list-item')).addClass(csscls('table-list-item'));
                         }});

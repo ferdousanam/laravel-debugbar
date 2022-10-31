@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
  */
 class QueryCollector extends PDOCollector
 {
+    use EditorHref;
+
     protected $timeCollector;
     protected $queries = [];
     protected $renderSqlWithParams = false;
@@ -289,6 +291,7 @@ class QueryCollector extends PDOCollector
             'namespace' => null,
             'name' => null,
             'line' => isset($trace['line']) ? $trace['line'] : '?',
+            'editorLink' => $this->getEditorHref($trace['file'], $trace['line'] ?? '?'),
         ];
 
         if (isset($trace['function']) && $trace['function'] == 'substituteBindings') {
